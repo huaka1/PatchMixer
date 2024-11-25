@@ -1,0 +1,36 @@
+epoch_time_sum:0, epoch:25, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_96_PatchMixer_ETTh1_ftM_sl336_pl96_p16s8_random2021_0  
+mse:0.35461947321891785, mae:0.3830689787864685, rse:0.5755491256713867
+
+epoch_time_sum:0, epoch:25, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_96_PatchMixer_ETTh1_ftM_sl336_pl96_p16s8_random2021_0  
+mse:0.3546191155910492, mae:0.3830685317516327, rse:0.5755488276481628
+
+epoch_time_sum:0, epoch:35, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_192_PatchMixer_ETTh1_ftM_sl336_pl192_p16s8_random2021_0  
+mse:0.3734782338142395, mae:0.39365682005882263, rse:0.5930335521697998
+
+epoch_time_sum:0, epoch:23, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_336_PatchMixer_ETTh1_ftM_sl336_pl336_p16s8_random2021_0  
+mse:0.3909737169742584, mae:0.410269558429718, rse:0.6077483296394348
+
+epoch_time_sum:0, epoch:16, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_720_PatchMixer_ETTh1_ftM_sl336_pl720_p16s8_random2021_0  
+mse:0.4459691643714905, mae:0.4634197950363159, rse:0.641412615776062
+
+epoch_time_sum:0, epoch:22, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_96_PatchMixer_ETTh2_ftM_sl336_pl96_p16s8_random2021_0  
+mse:0.22417104244232178, mae:0.30055269598960876, rse:0.39005982875823975
+
+epoch_time_sum:0, epoch:48, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_192_PatchMixer_ETTh2_ftM_sl336_pl192_p16s8_random2021_0  
+mse:0.2747209072113037, mae:0.33400020003318787, rse:0.4290691912174225
+
+epoch_time_sum:0, epoch:27, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_336_PatchMixer_ETTh2_ftM_sl336_pl336_p16s8_random2021_0  
+mse:0.316166490316391, mae:0.367681622505188, rse:0.45668908953666687
+
+epoch_time_sum:0, epoch:25, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_720_PatchMixer_ETTh2_ftM_sl336_pl720_p16s8_random2021_0  
+mse:0.39695531129837036, mae:0.4273523688316345, rse:0.505124032497406
+

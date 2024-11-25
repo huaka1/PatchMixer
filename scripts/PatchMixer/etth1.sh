@@ -16,8 +16,9 @@ data_name=ETTh1
 random_seed=2021
 
 for pred_len in 96 192 336 720
+# -m debugpy --listen 58793 --wait-for-client
 do
-    python -u run_longExp.py \
+    python -u  run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
       --root_path $root_path_name \
