@@ -57,42 +57,48 @@ class Backbone(nn.Module):
         self.nvals = configs.enc_in
         self.lookback = configs.seq_len
         self.forecasting = configs.pred_len
-        self.patch_size = configs.patch_len
-        self.stride = configs.stride
+        # 移除原有的单一patch_size和stride
+        # self.patch_size = configs.patch_len
+        # self.stride = configs.stride
+        
+        # 为每个专家定义不同的patch_size和stride
+        self.num_experts = 4
+        self.patch_sizes = [4, 8, 12, 16]
+        self.strides = [p // 2 for p in self.patch_sizes]  # 每个patch_size对应的stride为其一半
         self.kernel_size = configs.mixer_kernel_size
 
-        self.PatchMixer_blocks = nn.ModuleList([])
-        self.padding_patch_layer = nn.ReplicationPad1d((0, self.stride))
-        self.patch_num = int((self.lookback - self.patch_size)/self.stride + 1) + 1
-        # if configs.a < 1 or configs.a > self.patch_num:
-        #     configs.a = self.patch_num
-        self.a = self.patch_num
-        self.d_model = configs.d_model
-        self.dropout = configs.dropout
-        self.head_dropout = configs.head_dropout
-        self.depth = configs.e_layers
+        # 为每个专家创建对应的参数
+        self.patch_nums = [int((self.lookback - p)/s + 1) + 1 for p, s in zip(self.patch_sizes, self.strides)]
+        self.W_Ps = nn.ModuleList([nn.Linear(p, configs.d_model) for p in self.patch_sizes])
+        self.padding_layers = nn.ModuleList([nn.ReplicationPad1d((0, s)) for s in self.strides])
+        
+        # 为每个专家创建独立的PatchMixer_blocks
+        self.PatchMixer_blocks = nn.ModuleList([
+            nn.ModuleList([
+                PatchMixerLayer(dim=pn, a=pn, kernel_size=self.kernel_size) 
+                for _ in range(configs.e_layers)
+            ]) for pn in self.patch_nums
+        ])
 
-        for _ in range(self.depth):
-            self.PatchMixer_blocks.append(PatchMixerLayer(dim=self.patch_num, a=self.a, kernel_size=self.kernel_size))
-
-        self.W_P = nn.Linear(self.patch_size, self.d_model)
-        self.head0 = nn.Sequential(
-            # 将输入张量从倒数第二个维度开始展平
-            # 例如输入形状为[batch * n_val, patch_num, d_model]
-            # 输出形状为[batch * n_val, patch_num * d_model]
-            nn.Flatten(start_dim=-2),
-            nn.Linear(self.patch_num * self.d_model, self.forecasting),
-            nn.Dropout(self.head_dropout)
-        )
-        self.head1 = nn.Sequential(
-            nn.Flatten(start_dim=-2),
-            nn.Linear(self.a * self.d_model, int(self.forecasting * 2)),
-            nn.GELU(),
-            nn.Dropout(self.head_dropout),
-            nn.Linear(int(self.forecasting * 2), self.forecasting),
-            nn.Dropout(self.head_dropout)
-        )
-        self.dropout = nn.Dropout(self.dropout)
+        # 为每个专家创建独立的head0
+        self.head0 = nn.ModuleList([
+            nn.Sequential(
+                nn.Flatten(start_dim=-2),
+                nn.Linear(pn * configs.d_model, self.forecasting),
+                nn.Dropout(configs.head_dropout)
+            ) for pn in self.patch_nums
+        ])
+        self.head1 = nn.ModuleList([
+            nn.Sequential(
+                nn.Flatten(start_dim=-2),
+                nn.Linear(pn * configs.d_model, int(self.forecasting * 2)),
+                nn.GELU(),
+                nn.Dropout(configs.head_dropout),
+                nn.Linear(int(self.forecasting * 2), self.forecasting),
+                nn.Dropout(configs.head_dropout)
+            ) for pn in self.patch_nums
+        ])
+        self.dropout = nn.Dropout(configs.dropout)
         # RevIn
         self.revin = revin
         if self.revin:
@@ -194,20 +200,23 @@ class Backbone(nn.Module):
         expert_outputs = []
         for i in range(self.num_experts):
             expert_input = expert_inputs[i]
-            # 对每个专家输入执行原始的处理流程
             B, _, _ = expert_input.shape
             expert_input = expert_input.permute(0, 2, 1)
-            x_lookback = self.padding_patch_layer(expert_input)
-            x_expert = x_lookback.unfold(dimension=-1, size=self.patch_size, step=self.stride)
-            x_expert = self.W_P(x_expert)
+            
+            # 使用对应专家的参数
+            x_lookback = self.padding_layers[i](expert_input)
+            x_expert = x_lookback.unfold(dimension=-1, size=self.patch_sizes[i], step=self.strides[i])
+            x_expert = self.W_Ps[i](x_expert)
             x_expert = torch.reshape(x_expert, (-1, x_expert.shape[2], x_expert.shape[3]))
             x_expert = self.dropout(x_expert)
             
-            u = self.head0(x_expert)
+            # 使用对应专家的head0
+            u = self.head0[i](x_expert)
             
-            for PatchMixer_block in self.PatchMixer_blocks:
+            # 使用对应专家的PatchMixer_blocks
+            for PatchMixer_block in self.PatchMixer_blocks[i]:
                 x_expert = PatchMixer_block(x_expert)
-            x_expert = self.head1(x_expert)
+            x_expert = self.head1[i](x_expert)
             x_expert = u + x_expert
 
             x_expert = torch.reshape(x_expert, (B, nvars, -1))

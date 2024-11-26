@@ -66,3 +66,19 @@ epoch_time_sum:0, epoch:16, epoch_time_avg:0.0
 loss_flag2_lr0.0001_dm256_336_720_PatchMixer_ETTh2_ftM_sl336_pl720_p16s8_random2021_0  
 mse:0.39652544260025024, mae:0.42978060245513916, rse:0.504850447177887
 
+epoch_time_sum:0, epoch:30, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_96_PatchMixer_ETTh1_ftM_sl336_pl96_p16s8_random2021_0  
+mse:0.3522890508174896, mae:0.3802076280117035, rse:0.57365483045578
+
+epoch_time_sum:0, epoch:26, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_192_PatchMixer_ETTh1_ftM_sl336_pl192_p16s8_random2021_0  
+mse:0.3770934045314789, mae:0.3973059356212616, rse:0.5958968997001648
+
+epoch_time_sum:0, epoch:26, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_336_PatchMixer_ETTh1_ftM_sl336_pl336_p16s8_random2021_0  
+mse:0.39069339632987976, mae:0.4107397794723511, rse:0.607530415058136
+
+epoch_time_sum:0, epoch:22, epoch_time_avg:0.0
+loss_flag2_lr0.0001_dm256_336_720_PatchMixer_ETTh1_ftM_sl336_pl720_p16s8_random2021_0  
+mse:0.45334452390670776, mae:0.4622874855995178, rse:0.6466946601867676
+
